@@ -1,0 +1,24 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.env
+
+# Base vectorielle ChromaDB (regénérée via master_ingestor.py)
+chroma/
+
+# Données 5etools (trop lourdes, téléchargées séparément)
+data/
+
+# Jupyter/notebooks checkpoints
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db

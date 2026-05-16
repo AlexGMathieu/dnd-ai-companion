@@ -1,0 +1,16 @@
+[project]
+name = "dnd-ai-companion"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "anthropic>=0.102.0",
+    "chromadb>=1.5.9",
+    "pytest>=9.0.3",
+    "python-dotenv>=1.2.2",
+    "sentence-transformers>=5.5.0",
+    "streamlit>=1.57.0",
+]
+[tool.pytest.ini_options]
+pythonpath = ["parsers", "db"]

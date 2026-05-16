@@ -1,0 +1,82 @@
+import pytest
+import sys
+
+sys.path.append("../parsers")
+from feat_parser import FeatParser
+
+parser = FeatParser()
+
+def test_feat_parser():
+    aberrant_dragonmark = {
+			"name": "Aberrant Dragonmark",
+			"source": "EFA",
+			"page": 39,
+			"category": "D",
+			"prerequisite": [
+				{
+					"campaign": [
+						"Eberron"
+					],
+					"exclusiveFeatCategory": [
+						"D"
+					]
+				}
+			],
+			"additionalSpells": [
+				{
+					"ability": "con",
+					"prepared": {
+						"_": {
+							"rest": {
+								"1": [
+									{
+										"choose": "level=1|class=Sorcerer"
+									}
+								]
+							}
+						}
+					},
+					"known": {
+						"_": [
+							{
+								"choose": "level=0|class=Sorcerer"
+							}
+						]
+					}
+				}
+			],
+			"entries": [
+				"You gain the following benefits.",
+				{
+					"type": "entries",
+					"name": "Aberrant Fortitude",
+					"entries": [
+						"When you fail a Constitution saving throw, you can take a {@variantrule Reaction|XPHB} to roll {@dice 1d4} and add the number rolled to the save, potentially turning the failure into a success. Once you've used this benefit, you can't use it again until you finish a {@variantrule Long Rest|XPHB}."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Aberrant Magic",
+					"entries": [
+						"You know one {@filter cantrip of your choice from the Sorcerer spell list|spells|level=0|class=Sorcerer}. Also, choose a level 1 spell from that spell list. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a {@variantrule Short Rest|XPHB|Short} or {@variantrule Long Rest|XPHB}. You can also cast this spell using any spell slots you have. Constitution is your spellcasting ability for this spell."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Aberrant Surge",
+					"entries": [
+						"When you cast the level 1 spell from this feat, you can expend one of your {@variantrule Hit Point Dice|XPHB} and roll it. If you roll an even number, you gain a number of {@variantrule Temporary Hit Points|XPHB} equal to the number rolled. If you roll an odd number, one creature within 30 feet of you (not including you) takes Force damage equal to the number rolled. If no other creatures are in range, you take the damage."
+					]
+				}
+			]
+		}
+    
+    base, document, liens = parser.parse(aberrant_dragonmark)
+
+    assert "Aberrant Dragonmark" in base["name"]
+    assert "D" in base["category"]
+    assert "EFA" in base["source"]
+    assert "When you cast the level 1 spell from this feat" in document
+    assert "rule:hit point dice:xphb" in liens
+
+
