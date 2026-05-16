@@ -100,8 +100,8 @@ Données 5etools (JSON)
 ### Prérequis
 
 - Python 3.13+
-- [uv](https://docs.astral.sh/uv/)
-- Données 5etools v2.28.0 → [5etools-mirror-2](https://github.com/5etools-mirror-2/5etools-mirror-2)
+- uv
+- Données 5etools v2.28.0 → [5etools-mirror-2](https://github.com/5etools-mirror-3/5etools-src/releases/tag/v2.28.0)
 
 ### Étapes
 
