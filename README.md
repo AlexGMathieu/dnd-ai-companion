@@ -60,7 +60,7 @@ Données 5etools (JSON)
 |-----------|-------------|
 | Langage | Python 3.13.5 |
 | Base vectorielle | ChromaDB 1.5.9 |
-| Modèle d'embedding | `paraphrase-multilingual-MiniLM-L12-v2` (384 dim, multilingue FR/EN) |
+| Modèle d'embedding | `paraphrase-multilingual-MiniLM-L12-v2` (384 dim, multilingue FR/EN) — **baseline Phase 1** |
 | Métrique | Cosinus |
 | Interface | Streamlit |
 | Tests | pytest (38/38 ✅) |
@@ -91,7 +91,45 @@ Données 5etools (JSON)
 
 
 
-> **Baseline solide** : MRR=0.627 obtenu avec embeddings seuls, sans LLM, sans filtrage metadata. La Phase 2 ciblera les requêtes comparatives (MRR 0.425) via filtrage metadata ChromaDB et évaluation RAGAS.
+> **Baseline solide** : MRR=0.627 obtenu avec embeddings seuls, sans LLM, sans filtrage metadata. La Phase 2 conduira un plan d'expérience complet pour identifier la combinaison optimale modèle d'embedding × stratégie de chunking × reranking.
+
+---
+
+## Benchmark RAG — Plan d'expérience (Phase 2)
+
+Approche scientifique : **une variable à la fois**, golden dataset fixe, métriques quantitatives reproductibles.
+
+### Facteurs testés
+
+| Facteur | Niveaux |
+|---|---|
+| Modèle d'embedding | MiniLM (baseline), `multilingual-e5-large`, `text-embedding-3-small`, `text-embedding-3-large`, `bge-m3` |
+| Stratégie de chunking | Fixe 500 (baseline), Fixe 1000, Recursive splitter, Semantic chunking |
+| Reranking | Sans (baseline), Avec (LLM reranker) |
+
+### Deux plans d'expérience
+
+**Plan A — Entités structurées** (corpus actuel, 11 collections)
+- Chunking fixé : 1 entité = 1 chunk (invariant par nature)
+- Variables : modèle (5) × reranking (2) = **8 expériences**
+- Faisable immédiatement sur le golden dataset Session 18 (150 questions)
+
+**Plan B — Texte narratif** (88 livres d'aventure 5etools)
+- Variables : modèle × chunking × reranking = **plan fractionnaire ~12 expériences**
+- Golden dataset narratif à construire après parsing des aventures
+- `bge-m3` (8192 tokens) disponible sur desktop RTX A2000 12GB
+
+### Métriques mesurées
+
+| Couche | Métrique | Description |
+|---|---|---|
+| Retrieval | MRR | Position du bon chunk dans TOP_K |
+| Retrieval | nDCG | Qualité du classement global |
+| Retrieval | Coverage | Présence des keywords dans TOP_K |
+| Génération | Faithfulness | Réponse ancrée dans les chunks récupérés |
+| Génération | Answer relevancy | Réponse répond à la question (LLM-as-judge) |
+| Opérationnel | Latence (ms) | Temps ingestion + temps requête |
+| Opérationnel | Coût ($) | Tokens consommés × tarif (modèles API) |
 
 ---
 
@@ -129,10 +167,11 @@ uv run streamlit run ui/streamlit_app.py
 | Phase | Statut | Résultat utilisateur | Stack ajoutée |
 |-------|--------|----------------------|---------------|
 | **Phase 1** — RAG Baseline | ✅ Terminée | Recherche sémantique monsters (FR/EN), évaluation MRR/nDCG | ChromaDB, Streamlit, pytest |
-| **Phase 2** — API & Évaluation LLM | 🔜 | Recherche multi-collections via API REST, amélioration comparative | FastAPI, RAGAS |
-| **Phase 3** — Interface MJ | 📋 | Fiches enrichies, liens internes, lexique FR/EN | Streamlit avancé |
-| **Phase 4** — GUI avancée | 📋 | Onglets, filtres, switch édition 2014/2024 | React (vibe coding) |
-| **Phase 5** — LLM local | 📋 | Réponses génératives sans API externe | Ollama + Gemma 9B |
+| **Phase 2** — Benchmark RAG | 🔜 | Plan d'expérience : meilleure combinaison modèle × chunking × reranking | e5-large, bge-m3, OpenAI embeddings, RAGAS |
+| **Phase 3** — API REST | 📋 | Recherche multi-collections via API, filtrage metadata | FastAPI |
+| **Phase 4** — Interface MJ | 📋 | Fiches enrichies, liens internes, lexique FR/EN | Streamlit avancé |
+| **Phase 5** — GUI avancée | 📋 | Onglets, filtres, switch édition 2014/2024 | React (vibe coding) |
+| **Phase 6** — LLM local | 📋 | Réponses génératives sans API externe | Ollama + Gemma 9B |
 
 ---
 
